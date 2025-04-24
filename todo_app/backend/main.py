@@ -36,14 +36,3 @@ async def read_todos():
     Get the list of all todos.
     """
     return todos
-
-
-@app.get("/todos/{item_id}")
-async def get_todo(item_id: int):
-    """
-    Get a single todo by its ID.
-    """
-    for item in todos["todo"]:
-        if item["id"] == item_id:
-            return item
-    raise HTTPException(status_code=404, detail="Todo not found")
