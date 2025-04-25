@@ -1,13 +1,12 @@
-from typing import Union
-from fastapi import FastAPI, HTTPException
+"""This is the main for Todos API Development"""
+
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize FastAPI
 app = FastAPI()
 
-origins = [
-    'http://localhost:5173'
-]
+origins = ["http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,7 +24,7 @@ todos = {
         {"id": 2, "title": "Build a project", "is_completed": False},
         {"id": 3, "title": "Write a blog post", "is_completed": False},
         {"id": 4, "title": "Test with pytest", "is_completed": False},
-        {"id": 5, "title": "Deploy to Vercel", "is_completed": False}
+        {"id": 5, "title": "Deploy to Vercel", "is_completed": False},
     ]
 }
 
