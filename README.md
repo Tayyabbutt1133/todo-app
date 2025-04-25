@@ -1,1 +1,1 @@
-This is main branch for building app
+This is main branch for working on Todo app
