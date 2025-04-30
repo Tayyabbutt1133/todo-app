@@ -4,23 +4,25 @@ from fastapi.responses import JSONResponse
 from database import get_db
 from schemas import TodosCreate
 from controllers.todos_controls import (
-    create_todo, 
-    get_todos, 
-    get_todo_by_id, 
+    create_todo,
+    get_todos,
+    get_todo_by_id,
+    update_todo
 )
 from controllers.auth_controls import get_current_user_id
 
 router = APIRouter(prefix="/todos", tags=["todos"])
 
+
 @router.post("/create", status_code=201)
 async def create_new_todo(
-    todo_data: TodosCreate, 
-    db: Session = Depends(get_db), 
+    todo_data: TodosCreate,
+    db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
     """
     Create a new todo item for the authenticated user.
-    
+
     Parameters:
     ----------
     todo_data : TodosCreate
@@ -29,7 +31,7 @@ async def create_new_todo(
         Database session.
     user_id : int
         ID of the authenticated user.
-        
+
     Returns:
     -------
     JSONResponse
@@ -38,21 +40,22 @@ async def create_new_todo(
     response, code = create_todo(db=db, todo_data=todo_data, user_id=user_id)
     return JSONResponse(status_code=code, content=response)
 
+
 @router.get("/get-todos", status_code=200)
 async def get_all_todos(
-    db: Session = Depends(get_db), 
+    db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
     """
     Get all todos for the authenticated user.
-    
+
     Parameters:
     ----------
     db : Session
         Database session.
     user_id : int
         ID of the authenticated user.
-        
+
     Returns:
     -------
     JSONResponse
@@ -61,15 +64,16 @@ async def get_all_todos(
     response, code = get_todos(db=db, user_id=user_id)
     return JSONResponse(status_code=code, content=response)
 
+
 @router.get("/{todo_id}", status_code=200)
 async def get_single_todo(
-    todo_id: int, 
-    db: Session = Depends(get_db), 
+    todo_id: int,
+    db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
     """
     Get a specific todo by ID for the authenticated user.
-    
+
     Parameters:
     ----------
     todo_id : int
@@ -78,7 +82,7 @@ async def get_single_todo(
         Database session.
     user_id : int
         ID of the authenticated user.
-        
+
     Returns:
     -------
     JSONResponse
@@ -87,3 +91,33 @@ async def get_single_todo(
     response, code = get_todo_by_id(db=db, todo_id=todo_id, user_id=user_id)
     return JSONResponse(status_code=code, content=response)
 
+
+@router.put("/{todo_id}", status_code=200)
+async def update_todo(
+    todo_id: int,
+    todo_data: TodosCreate,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id)
+):
+    """
+    Update a specific todo by ID for the authenticated user.
+
+    Parameters:
+    ----------
+    todo_id : int
+        ID of the todo to update.
+    todo_data : TodosCreate
+        New todo data.
+    db : Session
+        Database session.
+    user_id : int
+        ID of the authenticated user.
+
+    Returns:
+    -------
+    JSONResponse
+        Response with the updated todo data or error.
+    """
+    response, code = update_todo(
+        db=db, todo_id=todo_id, user_id=user_id, todo_data=todo_data)
+    return JSONResponse(status_code=code, content=response)

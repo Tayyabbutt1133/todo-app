@@ -41,7 +41,7 @@ const Signin = () => {
       }
 
       const json_response = await response.json();
-      console.log("Response from sign-up server :", json_response);
+      // console.log("Response from sign-in server :", json_response);
 
       // Store the access token in cookies (without HttpOnly flag)
       document.cookie = `access_token=${json_response.access_token}; path=/; secure`;

@@ -42,11 +42,13 @@ const Signup = () => {
       }
 
       const json_response = await response.json();
-      // console.log("Response from sign up server :", json_response);
+      console.log("Response from sign-up server :", json_response);
 
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
+      // Store the access token in cookies (without HttpOnly flag)
+      document.cookie = `access_token=${json_response.access_token}; path=/; secure`;
+
+      // Navigate to the home page after successful login
+      navigate("/");
     } catch (error) {
       console.error(error);
     }

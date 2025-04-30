@@ -41,6 +41,7 @@ const Create_Todo = ({ onTodoCreated }) => {
       });
 
       const data = await response.json();
+      console.log("Response after creating todo:", data);
       
       if (response.ok) {
         setTitle("");
