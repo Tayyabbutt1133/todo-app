@@ -1,84 +1,57 @@
 import React, { useState, useEffect } from "react";
-import UpdateTodoModal from "./UpdateTodoModal";
+import { useSearchParams } from "react-router-dom";
+import getCookie from "../../utils/getcookie";
+import Todo from "./Todo";
+import TodoFilters from "./TodoFilters";
 
-const Todos_list = () => {
-  const [isTodo, setTodo] = useState([]);
-  const [isError, setIsError] = useState("");
+const Todos_list = ({ todos, get_todos }) => {
   const [userId, setUserId] = useState(null);
-  const [selectedTodo, setSelectedTodo] = useState(null);
 
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
-  };
+  // Get the current filter from URL search params
+  const [searchParams] = useSearchParams();
+  const currentFilter = searchParams.get("filter") || "all";
 
-  const get_todos = async () => {
-    const accessToken = getCookie("access_token");
-
-    if (!accessToken) {
-      setIsError("No access without Authorization");
-      return;
+  // Filter todos based on the current filter
+  const filteredTodos = todos.filter((todo) => {
+    if (currentFilter === "completed") {
+      return todo.is_completed === true;
+    } else if (currentFilter === "not-completed") {
+      return todo.is_completed === false;
     }
+    return true;
+  });
 
-    try {
-      const response = await fetch("http://127.0.0.1:8000/todos/get-todos", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch todos");
-      }
-
-      const json_response = await response.json();
-      console.log(json_response);
-
-      const { todos, user_id } = json_response;
-      if (todos) {
-        setTodo(todos);
-        setUserId(user_id);
-        setIsError("");
-      }
-    } catch (error) {
-      console.error(error);
-      setIsError(error.message || "Failed to fetch todos");
-    }
-  };
-
-  useEffect(() => {
-    get_todos();
-  }, []);
+  // Count todos by status for the filter summary
+  const completedCount = todos.filter((todo) => todo.is_completed).length;
+  const notCompletedCount = todos.length - completedCount;
 
   return (
-    <>
-      {isTodo?.map((todo) => (
-        <div
-          key={todo.id}
-          className="mx-20 flex justify-between items-center text-base cursor-pointer my-4 hover:scale-95 transition font-medium text-gray-800 bg-gray-100 px-4 py-2 rounded-lg shadow"
-        >
-          <p>{todo.title}</p>
-          <button
-            onClick={() => setSelectedTodo({ ...todo, user_id: userId })}
-            className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Update
-          </button>
-        </div>
-      ))}
-      {isError && <p className="text-red-500 mx-8">{isError}</p>}
+    <div className="container mx-auto px-4 max-w-2xl">
+      {/* Filter Component */}
+      <TodoFilters />
 
-      {selectedTodo && (
-        <UpdateTodoModal
-          todo={selectedTodo}
-          onClose={() => setSelectedTodo(null)}
-          onUpdate={get_todos}
-        />
-      )}
-    </>
+      {/* Filter Count track Summary - Better UI Experience */}
+      <div className="text-sm text-gray-500 text-center mb-4">
+        <>
+          Showing {currentFilter === "all" ? "all" : currentFilter} todos (
+          {filteredTodos.length})
+          <div className="text-xs mt-1">
+            {completedCount} completed, {notCompletedCount} pending
+          </div>
+        </>
+      </div>
+
+      <div className="space-y-3">
+        {filteredTodos.map((todo) => (
+          <Todo
+            key={todo.id}
+            todo={todo}
+            userId={userId}
+            onUpdate={get_todos}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 

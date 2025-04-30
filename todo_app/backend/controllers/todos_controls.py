@@ -35,7 +35,7 @@ def create_todo(db: Session, todo_data: TodosCreate, user_id: int):
                 "title": new_todo.title,
                 "is_completed": new_todo.is_completed,
             },
-            "user_id" : user_id
+            "user_id": user_id
         }, 201
 
     except Exception as e:
@@ -54,7 +54,7 @@ def get_todos(db: Session, user_id: int):
                     "is_completed": todo.is_completed}
             )
 
-        return {"status": "success", "todos": todo_list, "user_id" : user_id}, 200
+        return {"status": "success", "todos": todo_list, "user_id": user_id}, 200
 
     except Exception as e:
         return {
@@ -87,8 +87,9 @@ def get_todo_by_id(db: Session, todo_id: int, user_id: int):
         return {"status": "error", "message": f"Failed to retrieve todo: {str(e)}"}, 500
 
 
-def update_todo(db: Session, todo_id: int, user_id: int, todo_data: TodosCreate):
+def update_todo(db: Session, todo_id: int, user_id: int, todo_data: dict):
     try:
+        # Find the todo
         todo = (
             db.query(Todos)
             .filter(Todos.id == todo_id, Todos.user_id == user_id)
@@ -99,12 +100,14 @@ def update_todo(db: Session, todo_id: int, user_id: int, todo_data: TodosCreate)
             return {"status": "error", "message": "Todo not found"}, 404
 
         # Check if another todo with the same title exists for this user
-        if todo_data.title != todo.title:
+        if todo_data["title"] != todo.title:
             existing_todo = (
                 db.query(Todos)
-                .filter(Todos.title == todo_data.title,
-                        Todos.user_id == user_id,
-                        Todos.id != todo_id)
+                .filter(
+                    Todos.title == todo_data["title"],
+                    Todos.user_id == user_id,
+                    Todos.id != todo_id
+                )
                 .first()
             )
 
@@ -115,8 +118,9 @@ def update_todo(db: Session, todo_id: int, user_id: int, todo_data: TodosCreate)
                 }, 400
 
         # Update todo
-        todo.title = todo_data.title
-        todo.is_completed = todo_data.is_completed
+        todo.title = todo_data["title"]
+        # Ensure boolean conversion
+        todo.is_completed = bool(todo_data["is_completed"])
 
         db.commit()
         db.refresh(todo)
@@ -133,4 +137,5 @@ def update_todo(db: Session, todo_id: int, user_id: int, todo_data: TodosCreate)
 
     except Exception as e:
         db.rollback()
+        print(f"Error updating todo: {str(e)}")
         return {"status": "error", "message": f"Failed to update todo: {str(e)}"}, 500

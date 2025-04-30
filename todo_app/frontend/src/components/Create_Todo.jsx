@@ -1,15 +1,10 @@
 import React, { useState } from "react";
+import getCookie from "../../utils/getcookie";
 
 const Create_Todo = ({ onTodoCreated }) => {
   const [title, setTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Helper function to get cookie by name
-  const getCookie = (name) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-  };
 
   const handleCreate = async () => {
     if (!title.trim()) {

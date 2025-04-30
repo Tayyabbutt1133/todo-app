@@ -91,33 +91,49 @@ async def get_single_todo(
     response, code = get_todo_by_id(db=db, todo_id=todo_id, user_id=user_id)
     return JSONResponse(status_code=code, content=response)
 
-
 @router.put("/{todo_id}", status_code=200)
-async def update_todo(
+async def update_todo_controller(
     todo_id: int,
-    todo_data: TodosCreate,
+    todo_data: dict,  # Change to dict instead of TodosCreate to debug raw payload
     db: Session = Depends(get_db),
     user_id: int = Depends(get_current_user_id)
 ):
     """
     Update a specific todo by ID for the authenticated user.
-
+    
     Parameters:
     ----------
     todo_id : int
         ID of the todo to update.
-    todo_data : TodosCreate
+    todo_data : dict
         New todo data.
     db : Session
         Database session.
     user_id : int
         ID of the authenticated user.
-
+    
     Returns:
     -------
     JSONResponse
         Response with the updated todo data or error.
     """
+    print(f"Received update request for todo {todo_id} with data: {todo_data}")
+    
+    # Validate the data has required fields
+    if "title" not in todo_data:
+        return JSONResponse(
+            status_code=400, 
+            content={"status": "error", "message": "Title is required"}
+        )
+    
+    # Ensure is_completed is a boolean
+    if "is_completed" in todo_data:
+        todo_data["is_completed"] = bool(todo_data["is_completed"])
+    else:
+        todo_data["is_completed"] = False
+    
+    # Call the controller function
     response, code = update_todo(
-        db=db, todo_id=todo_id, user_id=user_id, todo_data=todo_data)
+        db=db, todo_id=todo_id, user_id=user_id, todo_data=todo_data
+    )
     return JSONResponse(status_code=code, content=response)
