@@ -3,15 +3,14 @@
 - Database.py - Initializing Instance with MySQL Database
 - Schemas.py - Defining data type to make sure correctness of data while requesting/responding
 - Models.py - Tables in MySQL
-- Auth.py - Functions for API Routes
+- Controllers.py - Functions for API Routes
 - Routes.py - API Routes
-- dummy_todos.py - Currently storing in-memory todos (temporary)
 - readme.md - Guide to setup backend locally
 - Requirements.txt - Packages to Install to get this app running !
 
 # Features
 - JWT-based authentication
-- In-memory todo management
+- Todo Feature
 - User login with HttpOnly cookie
 - User Signup
 - Token-based protected routes

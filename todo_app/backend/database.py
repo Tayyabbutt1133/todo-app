@@ -6,9 +6,13 @@ for SQLAlchemy in the Todos backend API.
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import os
+from dotenv import load_dotenv
 
-# Database connection URL
-DATABASE_URL = "mysql+pymysql://root:PAK03*pearl12@localhost:3306/todo_app"
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Create the SQLAlchemy engine
 engine = create_engine(DATABASE_URL)

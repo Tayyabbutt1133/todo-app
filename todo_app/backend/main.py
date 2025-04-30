@@ -8,9 +8,9 @@ from typing import Annotated
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from routes import router as router
-from dummy_todos import todos
-from database import engine, SessionLocal, get_db
+from routes.auth_routes import router as auth_routers
+from routes.todo_routes import router as todo_routers
+from database import engine, get_db
 from models import Base
 
 # Initialize FastAPI app
@@ -47,15 +47,5 @@ async def root():
 
 
 # Include additional routers (e.g., auth, user, todo routes)
-app.include_router(router)
-
-
-@app.get("/todos")
-async def read_todos():
-    """
-    Retrieve the list of all todos from dummy in-memory storage.
-
-    Returns:
-        dict: A dictionary containing a list of todo items.
-    """
-    return todos
+app.include_router(auth_routers)
+app.include_router(todo_routers)

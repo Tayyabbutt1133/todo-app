@@ -1,6 +1,7 @@
 import React from "react";
 import Todos_list from "../components/Todos_list";
 import { Link } from "react-router-dom";
+import Create_Todo from "../components/Create_Todo";
 
 const Home = () => {
   return (
@@ -21,6 +22,7 @@ const Home = () => {
         </div>
       </div>
       <div className="mt-20">
+        <Create_Todo/>
         <Todos_list />
       </div>
     </>
