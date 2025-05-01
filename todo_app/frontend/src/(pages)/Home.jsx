@@ -5,10 +5,13 @@ import Create_Todo from "../components/Create_Todo";
 import getCookie from "../../utils/getcookie";
 import deleteCookie from "../../utils/deletecookie";
 import { useNavigate } from "react-router-dom";
+import Authcheck from "../components/Authcheck";
 
 const Home = () => {
   const [isaccessToken, setAcccessToken] = useState("");
   const [todos, setTodos] = useState([]);
+
+  const TodoList_WithAuthCheck = Authcheck(Todos_list);
 
 
   const navigate = useNavigate();
@@ -81,7 +84,7 @@ const Home = () => {
       </div>
       <div className="mt-20">
         <Create_Todo  onTodoCreated={fetchTodos}/>
-        <Todos_list todos={todos} get_todos={fetchTodos} />
+        <TodoList_WithAuthCheck todos={todos} get_todos={fetchTodos} />
       </div>
     </>
   );
